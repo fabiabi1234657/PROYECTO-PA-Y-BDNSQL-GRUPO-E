@@ -1,0 +1,73 @@
+.recibo-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.recibo {
+  background: white;
+  border-radius: 12px;
+  padding: 36px 40px;
+  max-width: 640px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+.recibo-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.recibo-logo { font-size: 2.4rem; }
+.recibo-header h2 { font-size: 1.3rem; color: #1a3a5c; }
+.recibo-num { font-size: 0.95rem; color: #666; }
+.recibo-estado {
+  margin-left: auto;
+  background: #d4edda;
+  color: #155724;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.recibo-divider { border: none; border-top: 1px dashed #ccc; margin: 16px 0; }
+
+.recibo-section h3 { font-size: 0.85rem; color: #888; text-transform: uppercase; margin-bottom: 10px; }
+
+.recibo-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  padding: 4px 0;
+  color: #333;
+}
+.recibo-row span:first-child { color: #666; }
+
+.recibo-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 8px; }
+.recibo-table th { border-bottom: 2px solid #e0e0e0; padding: 6px 8px; text-align: left; color: #555; }
+.recibo-table td { padding: 8px; border-bottom: 1px solid #f5f5f5; }
+.recibo-table tr:last-child td { border-bottom: none; }
+
+.recibo-totales { display: flex; flex-direction: column; gap: 6px; }
+.recibo-total { font-size: 1.15rem; font-weight: 700; color: #1a3a5c; border-top: 2px solid #1a3a5c; padding-top: 8px; margin-top: 4px; }
+
+.recibo-footer { text-align: center; margin-top: 20px; color: #999; font-size: 0.8rem; }
+.recibo-nota { margin-top: 4px; color: #2e6da4; }
+
+.btn-nueva {
+  display: block;
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px;
+  background: #2e6da4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-nueva:hover { background: #1a3a5c; }
