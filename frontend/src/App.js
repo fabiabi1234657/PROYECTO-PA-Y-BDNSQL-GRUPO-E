@@ -9,17 +9,34 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>Sistema de Facturacion</h1>
-        <p>Grupo E - Programacion Avanzada y BD NoSQL</p>
+        <div className="header-content">
+          <div className="brand-group">
+            <div className="brand-badge">SISTEMA</div>
+            <div>
+              <h1 className="brand-title">Facturacion Electronica</h1>
+              <p className="brand-subtitle">Arquitectura Hexagonal &middot; Persistencia Poliglota</p>
+            </div>
+          </div>
+          <div className="header-meta">
+            <span className="cluster-badge">MySQL &middot; Mongo &middot; Cassandra</span>
+          </div>
+        </div>
       </header>
 
-      <main className="app-main">
+      <main className="app-main" id="main-content">
         {!facturaEmitida ? (
           <FacturacionForm onFacturaEmitida={setFacturaEmitida} />
         ) : (
-          <ReciboView factura={facturaEmitida} onNuevaFactura={() => setFacturaEmitida(null)} />
+          <ReciboView
+            factura={facturaEmitida}
+            onNuevaFactura={() => setFacturaEmitida(null)}
+          />
         )}
       </main>
+
+      <footer className="app-footer">
+        <p>Proyecto PA y BDNSQL &middot; Grupo E</p>
+      </footer>
     </div>
   );
 }

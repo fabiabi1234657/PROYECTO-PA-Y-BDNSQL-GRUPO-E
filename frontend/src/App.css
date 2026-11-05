@@ -2,22 +2,100 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--bg-app);
 }
 
 .app-header {
-  background: linear-gradient(135deg, #1a3a5c 0%, #2e6da4 100%);
-  color: white;
-  padding: 20px 32px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
+  padding: 16px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.app-header h1 { font-size: 1.8rem; margin-bottom: 4px; }
-.app-header p { font-size: 0.9rem; opacity: 0.8; }
+.header-content {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-badge {
+  background-color: var(--color-primary);
+  color: var(--text-inverse);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+}
+
+.brand-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.brand-subtitle {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cluster-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: var(--bg-surface-subtle);
+  border: 1px solid var(--border-light);
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+}
 
 .app-main {
   flex: 1;
-  padding: 24px 32px;
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
+  padding: 28px 20px;
   width: 100%;
+}
+
+.app-footer {
+  border-top: 1px solid var(--border-light);
+  padding: 16px 24px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  background-color: var(--bg-surface);
+}
+
+@media (max-width: 640px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .app-main {
+    padding: 16px 12px;
+  }
 }
