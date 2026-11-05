@@ -10,14 +10,6 @@ public class InvoiceDetail {
 
     public InvoiceDetail() {}
 
-    public InvoiceDetail(String productoId, String productoNombre, Integer cantidad, Double precioUnitario) {
-        this.productoId = productoId;
-        this.productoNombre = productoNombre;
-        this.cantidad = cantidad;
-        this.precioUnitario = precioUnitario;
-        this.subtotal = cantidad * precioUnitario;
-    }
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getProductoId() { return productoId; }

@@ -1,7 +1,6 @@
 package com.facturacion.infrastructure.adapter.mongodb;
 
 import com.facturacion.domain.model.Product;
-import com.facturacion.domain.model.Supplier;
 import com.facturacion.domain.port.out.ProductRepositoryPort;
 import org.springframework.stereotype.Component;
 
@@ -37,16 +36,8 @@ public class ProductMongoAdapter implements ProductRepositoryPort {
     }
 
     private Product toModel(ProductDocument doc) {
-        Supplier supplier = null;
-        if (doc.getProveedor() != null) {
-            supplier = new Supplier(
-                doc.getProveedor().getNombre(),
-                doc.getProveedor().getContacto(),
-                doc.getProveedor().getTelefono()
-            );
-        }
         return new Product(doc.getId(), doc.getNombre(), doc.getDescripcion(),
-                doc.getCosto(), doc.getPrecioVenta(), supplier, doc.getImageUrls());
+                doc.getCosto(), doc.getPrecioVenta(), doc.getProveedor(), doc.getImageUrls());
     }
 
     private ProductDocument toDocument(Product product) {
@@ -56,14 +47,8 @@ public class ProductMongoAdapter implements ProductRepositoryPort {
         doc.setDescripcion(product.getDescripcion());
         doc.setCosto(product.getCosto());
         doc.setPrecioVenta(product.getPrecioVenta());
+        doc.setProveedor(product.getProveedor());
         doc.setImageUrls(product.getImageUrls());
-        if (product.getProveedor() != null) {
-            ProductDocument.SupplierEmbedded se = new ProductDocument.SupplierEmbedded();
-            se.setNombre(product.getProveedor().getNombre());
-            se.setContacto(product.getProveedor().getContacto());
-            se.setTelefono(product.getProveedor().getTelefono());
-            doc.setProveedor(se);
-        }
         return doc;
     }
 }

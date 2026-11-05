@@ -12,7 +12,6 @@ function FacturacionForm({ onFacturaEmitida }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Cargar clientes y productos al montar
   useEffect(() => {
     axios.get(`${API}/persons/categoria/CLIENTE`)
       .then(r => setClientes(r.data))
@@ -63,11 +62,12 @@ function FacturacionForm({ onFacturaEmitida }) {
     if (detalles.length === 0) { alert('Agrega al menos un producto'); return; }
 
     setLoading(true);
+    setError(null);
     try {
       const payload = {
         clienteDocumento: clienteSeleccionado.documento,
         clienteNombre: clienteSeleccionado.nombre,
-        fechaEmision: new Date().toISOString(),
+        fechaEmision: new Date().toISOString().slice(0, 19),
         detalles,
         subtotal,
         iva,
@@ -85,12 +85,11 @@ function FacturacionForm({ onFacturaEmitida }) {
 
   return (
     <div className="form-grid">
-      {error && <div className="error-banner">⚠️ {error}</div>}
+      {error && <div className="error-banner">{error}</div>}
 
-      {/* Panel izquierdo: cliente + productos */}
       <div className="panel">
         <section className="card">
-          <h2>👤 Cliente</h2>
+          <h2>Cliente</h2>
           <select
             className="select-input"
             onChange={e => {
@@ -99,23 +98,23 @@ function FacturacionForm({ onFacturaEmitida }) {
             }}
             defaultValue=""
           >
-            <option value="" disabled>-- Selecciona un cliente --</option>
+            <option value="" disabled>Seleccione un cliente</option>
             {clientes.map(c => (
               <option key={c.documento} value={c.documento}>
-                {c.nombre} · {c.documento} · {c.ciudad}
+                {c.nombre} - {c.documento} ({c.ciudad})
               </option>
             ))}
           </select>
           {clienteSeleccionado && (
             <div className="cliente-info">
-              <span>📧 {clienteSeleccionado.correo}</span>
-              <span>📞 {clienteSeleccionado.telefono}</span>
+              <span>Correo: {clienteSeleccionado.correo}</span>
+              <span>Tel: {clienteSeleccionado.telefono}</span>
             </div>
           )}
         </section>
 
         <section className="card">
-          <h2>📦 Catálogo de Productos</h2>
+          <h2>Catalogo de Productos</h2>
           <div className="productos-grid">
             {productos.map(p => (
               <div key={p.id} className="producto-card">
@@ -128,7 +127,7 @@ function FacturacionForm({ onFacturaEmitida }) {
                   <span className="desc">{p.descripcion}</span>
                 </div>
                 <button className="btn-agregar" onClick={() => agregarProducto(p)}>
-                  + Agregar
+                  Agregar
                 </button>
               </div>
             ))}
@@ -136,13 +135,12 @@ function FacturacionForm({ onFacturaEmitida }) {
         </section>
       </div>
 
-      {/* Panel derecho: detalle de factura */}
       <div className="panel">
         <section className="card factura-panel">
-          <h2>🧾 Detalle de Factura</h2>
+          <h2>Detalle de Factura</h2>
 
           {detalles.length === 0 ? (
-            <p className="empty-msg">Agrega productos del catálogo</p>
+            <p className="empty-msg">Agrega productos del catalogo</p>
           ) : (
             <table className="detalle-table">
               <thead>
@@ -159,7 +157,7 @@ function FacturacionForm({ onFacturaEmitida }) {
                     <td>{d.productoNombre}</td>
                     <td>
                       <div className="qty-ctrl">
-                        <button onClick={() => cambiarCantidad(d.productoId, d.cantidad - 1)}>−</button>
+                        <button onClick={() => cambiarCantidad(d.productoId, d.cantidad - 1)}>-</button>
                         <span>{d.cantidad}</span>
                         <button onClick={() => cambiarCantidad(d.productoId, d.cantidad + 1)}>+</button>
                       </div>
@@ -183,7 +181,7 @@ function FacturacionForm({ onFacturaEmitida }) {
             onClick={emitirFactura}
             disabled={loading || detalles.length === 0 || !clienteSeleccionado}
           >
-            {loading ? '⏳ Emitiendo...' : '✅ Emitir Factura'}
+            {loading ? 'Emitiendo...' : 'Emitir Factura'}
           </button>
         </section>
       </div>

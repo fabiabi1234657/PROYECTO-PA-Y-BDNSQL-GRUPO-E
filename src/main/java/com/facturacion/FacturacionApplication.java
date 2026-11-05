@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
-@EnableAsync
+@EnableAsync(proxyTargetClass = true)
 public class FacturacionApplication {
     public static void main(String[] args) {
         SpringApplication.run(FacturacionApplication.class, args);

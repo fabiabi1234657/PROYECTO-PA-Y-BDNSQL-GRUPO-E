@@ -5,6 +5,7 @@ import com.facturacion.domain.model.InvoiceDetail;
 import com.facturacion.domain.port.out.InvoiceRepositoryPort;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,7 +48,8 @@ public class InvoiceMysqlAdapter implements InvoiceRepositoryPort {
         entity.setTotal(invoice.getTotal());
         entity.setEstado(invoice.getEstado());
 
-        List<InvoiceDetailEntity> detalles = invoice.getDetalles().stream().map(d -> {
+        List<InvoiceDetail> items = invoice.getDetalles() != null ? invoice.getDetalles() : Collections.emptyList();
+        List<InvoiceDetailEntity> detalles = items.stream().map(d -> {
             InvoiceDetailEntity de = new InvoiceDetailEntity();
             de.setProductoId(d.getProductoId());
             de.setProductoNombre(d.getProductoNombre());

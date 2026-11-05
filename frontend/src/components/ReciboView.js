@@ -14,19 +14,16 @@ function ReciboView({ factura, onNuevaFactura }) {
   return (
     <div className="recibo-wrapper">
       <div className="recibo">
-        {/* Encabezado */}
         <div className="recibo-header">
-          <div className="recibo-logo">🏢</div>
           <div>
-            <h2>FACTURA ELECTRÓNICA</h2>
-            <p className="recibo-num">N° {String(factura.id).padStart(6, '0')}</p>
+            <h2>FACTURA DE VENTA</h2>
+            <p className="recibo-num">No. {String(factura.id).padStart(6, '0')}</p>
           </div>
           <div className="recibo-estado">{factura.estado}</div>
         </div>
 
         <div className="recibo-divider" />
 
-        {/* Info cliente */}
         <div className="recibo-section">
           <h3>Cliente</h3>
           <div className="recibo-row"><span>Nombre:</span><span>{factura.clienteNombre}</span></div>
@@ -36,13 +33,12 @@ function ReciboView({ factura, onNuevaFactura }) {
 
         <div className="recibo-divider" />
 
-        {/* Detalles */}
         <div className="recibo-section">
           <h3>Productos</h3>
           <table className="recibo-table">
             <thead>
               <tr>
-                <th>Descripción</th>
+                <th>Descripcion</th>
                 <th>Cant.</th>
                 <th>Valor Unit.</th>
                 <th>Subtotal</th>
@@ -63,7 +59,6 @@ function ReciboView({ factura, onNuevaFactura }) {
 
         <div className="recibo-divider" />
 
-        {/* Totales */}
         <div className="recibo-totales">
           <div className="recibo-row"><span>Subtotal:</span><span>{formatMoney(factura.subtotal)}</span></div>
           <div className="recibo-row"><span>IVA (19%):</span><span>{formatMoney(factura.iva)}</span></div>
@@ -71,12 +66,11 @@ function ReciboView({ factura, onNuevaFactura }) {
         </div>
 
         <div className="recibo-footer">
-          <p>Gracias por su compra · Documento generado electrónicamente</p>
-          <p className="recibo-nota">Backup analítico en proceso asíncrono ✓</p>
+          <p>Documento generado por el sistema de facturacion</p>
         </div>
 
         <button className="btn-nueva" onClick={onNuevaFactura}>
-          + Nueva Factura
+          Nueva Factura
         </button>
       </div>
     </div>

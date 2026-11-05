@@ -5,21 +5,18 @@ spring:
   application:
     name: facturacion-it
 
-  # ---- MongoDB (Productos) ----
   data:
     mongodb:
       uri: mongodb://localhost:27017/facturacion_db
       database: facturacion_db
 
-    # ---- Cassandra (Personas) ----
-    cassandra:
-      contact-points: localhost
-      port: 9042
-      keyspace-name: facturacion_ks
-      local-datacenter: datacenter1
-      schema-action: CREATE_IF_NOT_EXISTS
+  cassandra:
+    contact-points: 127.0.0.1
+    port: 9042
+    keyspace-name: facturacion_ks
+    local-datacenter: datacenter1
+    schema-action: CREATE_IF_NOT_EXISTS
 
-  # ---- MySQL (Facturas) ----
   datasource:
     url: jdbc:mysql://localhost:3306/facturacion_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root

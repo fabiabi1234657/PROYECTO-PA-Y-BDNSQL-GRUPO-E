@@ -9,8 +9,8 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>🧾 Sistema de Facturación</h1>
-        <p>Arquitectura Hexagonal · Spring Boot · React</p>
+        <h1>Sistema de Facturacion</h1>
+        <p>Grupo E - Programacion Avanzada y BD NoSQL</p>
       </header>
 
       <main className="app-main">

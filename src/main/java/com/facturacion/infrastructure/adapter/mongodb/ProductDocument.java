@@ -1,5 +1,6 @@
 package com.facturacion.infrastructure.adapter.mongodb;
 
+import com.facturacion.domain.model.Supplier;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
@@ -13,7 +14,7 @@ public class ProductDocument {
     private String descripcion;
     private Double costo;
     private Double precioVenta;
-    private SupplierEmbedded proveedor;
+    private Supplier proveedor;
     private List<String> imageUrls;
 
     public ProductDocument() {}
@@ -28,21 +29,8 @@ public class ProductDocument {
     public void setCosto(Double costo) { this.costo = costo; }
     public Double getPrecioVenta() { return precioVenta; }
     public void setPrecioVenta(Double precioVenta) { this.precioVenta = precioVenta; }
-    public SupplierEmbedded getProveedor() { return proveedor; }
-    public void setProveedor(SupplierEmbedded proveedor) { this.proveedor = proveedor; }
+    public Supplier getProveedor() { return proveedor; }
+    public void setProveedor(Supplier proveedor) { this.proveedor = proveedor; }
     public List<String> getImageUrls() { return imageUrls; }
     public void setImageUrls(List<String> imageUrls) { this.imageUrls = imageUrls; }
-
-    public static class SupplierEmbedded {
-        private String nombre;
-        private String contacto;
-        private String telefono;
-
-        public String getNombre() { return nombre; }
-        public void setNombre(String nombre) { this.nombre = nombre; }
-        public String getContacto() { return contacto; }
-        public void setContacto(String contacto) { this.contacto = contacto; }
-        public String getTelefono() { return telefono; }
-        public void setTelefono(String telefono) { this.telefono = telefono; }
-    }
 }

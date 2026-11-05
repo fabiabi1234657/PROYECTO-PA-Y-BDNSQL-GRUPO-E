@@ -24,7 +24,8 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Docker volumes (locales)
+# Docker volumes
 mysql_data/
 mongo_data/
 cassandra_data/
+graphify-out/

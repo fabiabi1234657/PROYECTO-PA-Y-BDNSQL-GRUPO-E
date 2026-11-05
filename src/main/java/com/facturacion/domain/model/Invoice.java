@@ -1,6 +1,7 @@
 package com.facturacion.domain.model;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 public class Invoice {
@@ -25,12 +26,29 @@ public class Invoice {
         calcularTotales();
     }
 
-    private void calcularTotales() {
-        this.subtotal = detalles.stream()
-            .mapToDouble(InvoiceDetail::getSubtotal)
-            .sum();
-        this.iva = this.subtotal * 0.19;
-        this.total = this.subtotal + this.iva;
+    public void calcularTotales() {
+        List<InvoiceDetail> items = detalles != null ? detalles : Collections.emptyList();
+        double sum = 0.0;
+        for (InvoiceDetail d : items) {
+            int cant = d.getCantidad() != null ? d.getCantidad() : 0;
+            double precio = d.getPrecioUnitario() != null ? d.getPrecioUnitario() : 0.0;
+            double lineSub = round2(cant * precio);
+            d.setSubtotal(lineSub);
+            sum += lineSub;
+        }
+        this.subtotal = round2(sum);
+        this.iva = round2(this.subtotal * 0.19);
+        this.total = round2(this.subtotal + this.iva);
+        if (this.fechaEmision == null) {
+            this.fechaEmision = LocalDateTime.now();
+        }
+        if (this.estado == null || this.estado.isBlank()) {
+            this.estado = "EMITIDA";
+        }
+    }
+
+    private static double round2(double value) {
+        return Math.round(value * 100.0) / 100.0;
     }
 
     public Long getId() { return id; }
