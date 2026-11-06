@@ -36,3 +36,6 @@ logging:
     com.facturacion: DEBUG
     org.springframework.data.mongodb: INFO
     org.springframework.data.cassandra: INFO
+
+druid:
+  coordinator-url: ${DRUID_COORDINATOR_URL:http://localhost:8888}

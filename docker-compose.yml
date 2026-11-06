@@ -41,7 +41,73 @@ services:
       timeout: 10s
       retries: 10
 
+  # ---- Apache Druid (cluster minimo) ----
+  druid-postgres:
+    image: postgres:15
+    container_name: druid-postgres
+    environment:
+      POSTGRES_PASSWORD: FoolishPassword
+      POSTGRES_USER: druid
+      POSTGRES_DB: druid
+    volumes:
+      - druid_metadata:/var/lib/postgresql/data
+
+  druid-zookeeper:
+    image: zookeeper:3.5.10
+    container_name: druid-zookeeper
+    environment:
+      ZOO_MY_ID: 1
+
+  druid-coordinator:
+    image: apache/druid:31.0.0
+    container_name: druid-coordinator
+    command: ["coordinator"]
+    env_file: druid.env
+    depends_on: [druid-zookeeper, druid-postgres]
+    ports:
+      - "8081:8081"
+    volumes:
+      - druid_shared:/opt/shared
+
+  druid-broker:
+    image: apache/druid:31.0.0
+    container_name: druid-broker
+    command: ["broker"]
+    env_file: druid.env
+    depends_on: [druid-zookeeper, druid-postgres, druid-coordinator]
+    ports:
+      - "8082:8082"
+
+  druid-historical:
+    image: apache/druid:31.0.0
+    container_name: druid-historical
+    command: ["historical"]
+    env_file: druid.env
+    depends_on: [druid-zookeeper, druid-postgres, druid-coordinator]
+    volumes:
+      - druid_shared:/opt/shared
+
+  druid-middlemanager:
+    image: apache/druid:31.0.0
+    container_name: druid-middlemanager
+    command: ["middleManager"]
+    env_file: druid.env
+    depends_on: [druid-zookeeper, druid-postgres, druid-coordinator]
+    volumes:
+      - druid_shared:/opt/shared
+
+  druid-router:
+    image: apache/druid:31.0.0
+    container_name: druid-router
+    command: ["router"]
+    env_file: druid.env
+    depends_on: [druid-zookeeper, druid-postgres, druid-coordinator]
+    ports:
+      - "8888:8888"
+
 volumes:
+  druid_metadata:
+  druid_shared:
   mysql_data:
   mongo_data:
   cassandra_data:
