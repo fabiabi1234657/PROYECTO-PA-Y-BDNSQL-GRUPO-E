@@ -4,7 +4,7 @@ import './FacturacionForm.css';
 
 const API = 'http://localhost:8080/api';
 
-function FacturacionForm({ onFacturaEmitida }) {
+function FacturacionForm({ onFacturaEmitida, prediccionInicial, onIrAML }) {
   const [clientes, setClientes] = useState([]);
   const [productos, setProductos] = useState([]);
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
@@ -12,7 +12,7 @@ function FacturacionForm({ onFacturaEmitida }) {
   const [filtroProducto, setFiltroProducto] = useState('');
   const [cargandoDatos, setCargandoDatos] = useState(true);
   const [emitiendo, setEmitiendo] = useState(false);
-  const [notificacion, setNotificacion] = useState(null); // { type: 'error'|'warning', message: '' }
+  const [notificacion, setNotificacion] = useState(null); // { type: 'error'|'warning'|'info', message: '' }
 
   useEffect(() => {
     let activo = true;
@@ -20,7 +20,7 @@ function FacturacionForm({ onFacturaEmitida }) {
     async function cargarInicial() {
       try {
         const [respClientes, respProductos] = await Promise.all([
-          axios.get(`${API}/persons/categoria/CLIENTE`),
+          axios.get(`${API}/persons`),
           axios.get(`${API}/products`)
         ]);
 
@@ -45,6 +45,39 @@ function FacturacionForm({ onFacturaEmitida }) {
     cargarInicial();
     return () => { activo = false; };
   }, []);
+
+  // Carga automática de recomendación si proviene de Machine Learning
+  useEffect(() => {
+    if (prediccionInicial && productos.length > 0) {
+      const prod = productos.find(
+        (p) => p.id === prediccionInicial.producto?.id || p.nombre === prediccionInicial.producto?.nombre
+      );
+      if (prod) {
+        const cant = prediccionInicial.cantidad || 1;
+        const precio = prod.precioVenta;
+        setDetalles([
+          {
+            productoId: prod.id,
+            productoNombre: prod.nombre,
+            cantidad: cant,
+            precioUnitario: precio,
+            subtotal: Math.round(cant * precio * 100) / 100
+          }
+        ]);
+
+        // Si hay cliente que coincida con la categoría o ciudad
+        if (clientes.length > 0) {
+          const cliMatch = clientes.find((c) => c.categoria === prediccionInicial.categoriaCliente);
+          if (cliMatch) setClienteSeleccionado(cliMatch);
+        }
+
+        setNotificacion({
+          type: 'info',
+          message: `Sugerencia de Machine Learning cargada: ${cant} unidades de "${prod.nombre}" (${prediccionInicial.categoriaCliente || 'Demanda estimada'}). La factura usa el precio vigente del catálogo.`
+        });
+      }
+    }
+  }, [prediccionInicial, productos, clientes]);
 
   const agregarProducto = (producto) => {
     setNotificacion(null);
@@ -129,12 +162,10 @@ function FacturacionForm({ onFacturaEmitida }) {
       const payload = {
         clienteDocumento: clienteSeleccionado.documento,
         clienteNombre: clienteSeleccionado.nombre,
-        fechaEmision: new Date().toISOString().slice(0, 19),
         detalles,
         subtotal,
         iva,
-        total,
-        estado: 'EMITIDA'
+        total
       };
 
       const response = await axios.post(`${API}/invoices`, payload);
@@ -169,10 +200,31 @@ function FacturacionForm({ onFacturaEmitida }) {
 
   return (
     <div className="billing-layout">
+      {/* Barra de Recomendación Inteligente de ML */}
+      {onIrAML && (
+        <div className="ml-recommendation-cta">
+          <div className="ml-cta-text">
+            <span className="ml-sparkle">✨</span>
+            <span>
+              <strong>Inteligencia Artificial (Apache Druid):</strong> Estime las unidades que demandará su cliente según su categoría comercial y el precio.
+            </span>
+          </div>
+          <button type="button" className="btn-ml-cta" onClick={onIrAML}>
+            Abrir Simulador ML &rarr;
+          </button>
+        </div>
+      )}
+
       {notificacion && (
         <div
           role="alert"
-          className={`feedback-banner ${notificacion.type === 'error' ? 'banner-error' : 'banner-warning'}`}
+          className={`feedback-banner ${
+            notificacion.type === 'error'
+              ? 'banner-error'
+              : notificacion.type === 'info'
+              ? 'banner-info'
+              : 'banner-warning'
+          }`}
         >
           <span className="banner-text">{notificacion.message}</span>
           <button

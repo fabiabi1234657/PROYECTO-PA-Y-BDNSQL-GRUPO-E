@@ -1,0 +1,373 @@
+.ml-view-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ml-hero-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+}
+
+.ml-hero-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.ml-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ml-tag {
+  background-color: #ede9fe;
+  color: #6d28d9;
+}
+
+.status-indicator {
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-online {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.status-sim {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.ml-hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-reentrenar {
+  padding: 0.5rem 1rem;
+  background-color: #6d28d9;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-reentrenar:hover:not(:disabled) {
+  background-color: #5b21b6;
+}
+
+.btn-toggle-grafica {
+  padding: 0.5rem 1rem;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-grafica:hover {
+  background-color: #e2e8f0;
+}
+
+.ml-banner {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.banner-exito {
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.banner-info {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.ml-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.ml-metric-card {
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.ml-metric-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.05em;
+}
+
+.ml-metric-num {
+  font-size: 1.625rem;
+  color: #0f172a;
+}
+
+.ml-metric-num.highlight {
+  color: #6d28d9;
+}
+
+.ml-metric-desc {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+/* Gráficas */
+.ml-chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chart-preview-box {
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 250px;
+}
+
+.chart-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.chart-fallback-info {
+  padding: 1.5rem;
+  text-align: center;
+  color: #475569;
+}
+
+.chart-fallback-info code {
+  display: inline-block;
+  margin: 0.5rem 0;
+  padding: 0.25rem 0.5rem;
+  background-color: #f1f5f9;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* Layout del simulador */
+.ml-simulator-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .ml-simulator-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.simulator-form-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sim-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.sim-grid-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.btn-ml-predict {
+  margin-top: 0.5rem;
+  background-color: #0284c7;
+}
+
+.btn-ml-predict:hover:not(:disabled) {
+  background-color: #0369a1;
+}
+
+/* Resultados */
+.simulator-result-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.empty-prediction-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.prediction-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prediction-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.prediction-highlight-box {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.pred-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #1e40af;
+  letter-spacing: 0.05em;
+}
+
+.pred-qty-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.25rem 0;
+}
+
+.pred-large-num {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  line-height: 1;
+}
+
+.pred-unit {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.pred-exact-val {
+  font-size: 0.75rem;
+  color: #60a5fa;
+}
+
+.prediction-details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.pred-detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #334155;
+}
+
+.pred-profit {
+  color: #15803d;
+}
+
+.equation-box {
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.equation-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.equation-math {
+  font-family: monospace;
+  font-size: 0.8125rem;
+  color: #1e293b;
+  margin: 0;
+}
+
+.equation-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.eq-badge {
+  font-size: 0.6875rem;
+  background-color: #ede9fe;
+  color: #5b21b6;
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+}
+
+.btn-apply-invoice {
+  padding: 0.75rem 1rem;
+  background-color: #15803d;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-apply-invoice:hover {
+  background-color: #166534;
+}

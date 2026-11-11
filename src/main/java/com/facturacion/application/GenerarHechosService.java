@@ -5,6 +5,7 @@ import com.facturacion.domain.model.InvoiceDetail;
 import com.facturacion.domain.model.Person;
 import com.facturacion.domain.model.Product;
 import com.facturacion.domain.model.VentaFact;
+import com.facturacion.domain.model.ResultadoSincronizacion;
 import com.facturacion.domain.port.in.GenerarHechosUseCase;
 import com.facturacion.domain.port.out.DruidIngestionPort;
 import com.facturacion.domain.port.out.InvoiceRepositoryPort;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +44,7 @@ public class GenerarHechosService implements GenerarHechosUseCase {
     }
 
     @Override
-    public List<VentaFact> ejecutarProcesoHechos() {
+    public ResultadoSincronizacion ejecutarProcesoHechos() {
         log.info("[ETL] Extrayendo facturas desde MySQL...");
         List<Invoice> invoices = invoiceRepository.findAll();
         log.info("[ETL] {} facturas extraidas", invoices.size());
@@ -91,7 +92,7 @@ public class GenerarHechosService implements GenerarHechosUseCase {
 
         if (facts.isEmpty()) {
             log.warn("[ETL] No hay hechos para enviar a Druid");
-            return facts;
+            return new ResultadoSincronizacion(true, 0, 0, "No hay hechos para enviar a Druid");
         }
 
         log.info("[ETL] Enviando {} hechos a Druid...", facts.size());
@@ -101,7 +102,10 @@ public class GenerarHechosService implements GenerarHechosUseCase {
         } else {
             log.error("[ETL] Fallo el envio a Druid");
         }
-        return facts;
+        double ganancia = facts.stream().mapToDouble(f -> f.getGanancia() != null ? f.getGanancia() : 0).sum();
+        return new ResultadoSincronizacion(ok, facts.size(), ganancia, ok
+                ? "Ingesta enviada a Druid; pendiente de finalización"
+                : "Druid no aceptó la ingesta o no fue posible conectar; consulte el registro del servidor");
     }
 
     private Person lookupPerson(String documento, Map<String, Person> cache) {
@@ -133,8 +137,8 @@ public class GenerarHechosService implements GenerarHechosUseCase {
     }
 
     private static Instant toInstant(LocalDateTime date) {
-        LocalDateTime d = date != null ? date : LocalDateTime.now();
-        return d.atZone(ZoneId.systemDefault()).toInstant();
+        LocalDateTime d = date != null ? date : LocalDateTime.now(ZoneOffset.UTC);
+        return d.toInstant(ZoneOffset.UTC);
     }
 
     private static double round2(double v) {
