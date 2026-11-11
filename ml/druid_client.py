@@ -14,8 +14,8 @@ import numpy as np
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("DruidClient")
 
-# URL por defecto del router/broker de Apache Druid
-DRUID_SQL_URL = os.getenv("DRUID_SQL_URL", "http://localhost:8888/druid/v2/sql")
+# URL por defecto del router/broker de Apache Druid (usar 127.0.0.1 para evitar latencias IPv6 en Windows)
+DRUID_SQL_URL = os.getenv("DRUID_SQL_URL", "http://127.0.0.1:8888/druid/v2/sql")
 DATASOURCE_NAME = os.getenv("DRUID_DATASOURCE", "hechos_ventas")
 
 

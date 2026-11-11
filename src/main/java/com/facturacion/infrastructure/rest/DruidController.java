@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/druid")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000"})
 public class DruidController {
     private static final Logger log = LoggerFactory.getLogger(DruidController.class);
 
@@ -26,13 +26,27 @@ public class DruidController {
     public ResponseEntity<Map<String, Object>> sincronizarHechos() {
         ResultadoSincronizacion resultado = generarHechosUseCase.ejecutarProcesoHechos();
 
+        String estado;
+        int codigo;
+        if (resultado.exitoso()) {
+            if (resultado.totalHechos() == 0) {
+                estado = "NO_DATA";
+                codigo = 200;
+            } else {
+                estado = "SUBMITTED";
+                codigo = 202;
+            }
+        } else {
+            estado = "ERROR";
+            codigo = 502;
+        }
+
         Map<String, Object> resp = new HashMap<>();
-        resp.put("status", !resultado.exitoso() ? "ERROR" : resultado.totalHechos() == 0 ? "NO_DATA" : "SUBMITTED");
+        resp.put("status", estado);
         resp.put("hechosEnviados", resultado.exitoso() ? resultado.totalHechos() : 0);
         resp.put("gananciaTotal", resultado.gananciaTotal());
         resp.put("mensaje", resultado.mensaje());
         resp.put("message", resultado.mensaje());
-        int codigo = !resultado.exitoso() ? 502 : resultado.totalHechos() == 0 ? 200 : 202;
         return ResponseEntity.status(codigo).body(resp);
     }
 

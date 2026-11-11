@@ -49,45 +49,7 @@ public class GenerarHechosService implements GenerarHechosUseCase {
         List<Invoice> invoices = invoiceRepository.findAll();
         log.info("[ETL] {} facturas extraidas", invoices.size());
 
-        // Caches para evitar consultas repetidas a Cassandra / MongoDB
-        Map<String, Person> personCache = new HashMap<>();
-        Map<String, Product> productCache = new HashMap<>();
-
-        List<VentaFact> facts = new ArrayList<>();
-        for (Invoice invoice : invoices) {
-            if (invoice.getDetalles() == null) {
-                continue;
-            }
-            Person person = lookupPerson(invoice.getClienteDocumento(), personCache);
-            Instant ts = toInstant(invoice.getFechaEmision());
-
-            for (InvoiceDetail d : invoice.getDetalles()) {
-                Product product = lookupProduct(d.getProductoId(), productCache);
-
-                int cantidad = d.getCantidad() != null ? d.getCantidad() : 0;
-                double precio = d.getPrecioUnitario() != null ? d.getPrecioUnitario() : 0.0;
-                double costo = product != null && product.getCosto() != null ? product.getCosto() : 0.0;
-                double subtotal = d.getSubtotal() != null ? d.getSubtotal() : round2(cantidad * precio);
-                double ganancia = round2((precio - costo) * cantidad);
-
-                String productoNombre = d.getProductoNombre() != null ? d.getProductoNombre()
-                        : (product != null ? product.getNombre() : null);
-                String proveedor = product != null && product.getProveedor() != null
-                        ? product.getProveedor().getNombre() : "DESCONOCIDO";
-
-                facts.add(new VentaFact(
-                        ts,
-                        invoice.getId(),
-                        invoice.getClienteDocumento(),
-                        person != null ? person.getNombre() : invoice.getClienteNombre(),
-                        person != null && person.getCiudad() != null ? person.getCiudad() : "DESCONOCIDA",
-                        person != null && person.getCategoria() != null ? person.getCategoria() : "DESCONOCIDA",
-                        d.getProductoId(),
-                        productoNombre,
-                        proveedor,
-                        cantidad, precio, costo, subtotal, ganancia));
-            }
-        }
+        List<VentaFact> facts = consolidarHechos(invoices);
         log.info("[ETL] Consolidacion completada: {} hechos VentaFact generados", facts.size());
 
         if (facts.isEmpty()) {
@@ -106,6 +68,56 @@ public class GenerarHechosService implements GenerarHechosUseCase {
         return new ResultadoSincronizacion(ok, facts.size(), ganancia, ok
                 ? "Ingesta enviada a Druid; pendiente de finalización"
                 : "Druid no aceptó la ingesta o no fue posible conectar; consulte el registro del servidor");
+    }
+
+    private List<VentaFact> consolidarHechos(List<Invoice> invoices) {
+        // Caches para evitar consultas repetidas a Cassandra / MongoDB
+        Map<String, Person> personCache = new HashMap<>();
+        Map<String, Product> productCache = new HashMap<>();
+
+        List<VentaFact> facts = new ArrayList<>();
+        for (Invoice invoice : invoices) {
+            if (invoice.getDetalles() == null) {
+                continue;
+            }
+            Person person = lookupPerson(invoice.getClienteDocumento(), personCache);
+            Instant ts = toInstant(invoice.getFechaEmision());
+
+            for (InvoiceDetail d : invoice.getDetalles()) {
+                Product product = lookupProduct(d.getProductoId(), productCache);
+
+                facts.add(crearHecho(invoice, d, person, ts, product));
+            }
+        }
+        return facts;
+    }
+
+    private VentaFact crearHecho(Invoice invoice, InvoiceDetail d, Person person,
+                                 Instant ts, Product product) {
+        int cantidad = d.getCantidad() != null ? d.getCantidad() : 0;
+        double precio = d.getPrecioUnitario() != null ? d.getPrecioUnitario() : 0.0;
+        double costo = product != null && product.getCosto() != null ? product.getCosto() : 0.0;
+        double subtotal = d.getSubtotal() != null ? d.getSubtotal() : round2(cantidad * precio);
+        double ganancia = round2((precio - costo) * cantidad);
+
+        String productoNombre = d.getProductoNombre();
+        if (productoNombre == null && product != null) {
+            productoNombre = product.getNombre();
+        }
+        String proveedor = product != null && product.getProveedor() != null
+                ? product.getProveedor().getNombre() : "DESCONOCIDO";
+
+        return new VentaFact(
+                ts,
+                invoice.getId(),
+                invoice.getClienteDocumento(),
+                person != null ? person.getNombre() : invoice.getClienteNombre(),
+                person != null && person.getCiudad() != null ? person.getCiudad() : "DESCONOCIDA",
+                person != null && person.getCategoria() != null ? person.getCategoria() : "DESCONOCIDA",
+                d.getProductoId(),
+                productoNombre,
+                proveedor,
+                cantidad, precio, costo, subtotal, ganancia);
     }
 
     private Person lookupPerson(String documento, Map<String, Person> cache) {

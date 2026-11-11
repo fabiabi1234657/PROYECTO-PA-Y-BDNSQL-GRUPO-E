@@ -90,3 +90,8 @@ npm start
 - La sincronización conserva el reemplazo del histórico; no activa carga incremental ni anexado de datos.
 - El panel de ML muestra únicamente métricas recibidas del servicio y su fuente declarada. Sin conexión o sin entrenamiento muestra métricas pendientes; no calcula predicciones de respaldo con coeficientes fijos. El botón **Entrenar y Medir Ahora** solicita nuevas métricas. Python aún puede usar datos simulados cuando Druid no está disponible, y el panel identifica esa fuente.
 - Al cargar una recomendación a la factura se usa el precio vigente del catálogo, aunque el escenario de predicción utilice un precio simulado.
+
+
+### Orígenes permitidos del frontend
+
+Los endpoints Java permiten solicitudes del navegador desde `http://localhost:3000` y `http://127.0.0.1:3000`. Si el frontend se publica en otra dirección, hay que configurar ese origen explícitamente en los controladores. Los estados y cuerpos de respuesta de la sincronización con Druid se conservan.

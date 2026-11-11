@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './MachineLearningView.css';
 
-const ML_API = 'http://localhost:5000/api/ml';
+const ML_API = process.env.REACT_APP_ML_API || 'http://127.0.0.1:5000/api/ml';
 const BACKEND_API = 'http://localhost:8080/api';
 
 function metricasMedidas(data) {
@@ -47,7 +47,7 @@ function MachineLearningView({ onCargarAFactura }) {
       });
 
     // Verificar si el microservicio Flask ML está activo
-    axios.get(`${ML_API}/status`, { timeout: 2000 })
+    axios.get(`${ML_API}/status`, { timeout: 6000 })
       .then((res) => {
         setServicioActivo(true);
         setMetricas(metricasMedidas(res.data));
@@ -234,7 +234,7 @@ function MachineLearningView({ onCargarAFactura }) {
           </p>
           <div className="chart-preview-box">
             <img
-              src="http://localhost:5000/api/ml/grafica"
+              src={`${ML_API}/grafica`}
               alt="Evaluación del Modelo de Machine Learning"
               className="chart-img"
               onError={(e) => {

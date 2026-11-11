@@ -111,5 +111,5 @@ def descargar_grafica():
 if __name__ == "__main__":
     print("[Flask] Inicializando y entrenando modelo localmente...")
     inicializar()
-    print("[Flask] Servidor ML activo en http://localhost:5000")
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    print("[Flask] Servidor ML activo en http://127.0.0.1:5000 (0.0.0.0:5000)")
+    app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)
