@@ -2,25 +2,27 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-app);
+  background-color: var(--bg-app, #f8fafc);
 }
 
 .app-header {
-  background-color: var(--bg-surface);
-  border-bottom: 1px solid var(--border-light);
-  padding: 16px 24px;
+  background-color: var(--bg-surface, #ffffff);
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 20;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .header-content {
   max-width: 1240px;
   margin: 0 auto;
+  padding: 16px 24px 10px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .brand-group {
@@ -30,13 +32,13 @@
 }
 
 .brand-badge {
-  background-color: var(--color-primary);
-  color: var(--text-inverse);
+  background-color: #0284c7;
+  color: #ffffff;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   padding: 4px 8px;
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   text-transform: uppercase;
 }
 
@@ -44,14 +46,14 @@
   margin: 0;
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #0f172a;
   letter-spacing: -0.01em;
 }
 
 .brand-subtitle {
   margin: 0;
   font-size: 0.78rem;
-  color: var(--text-muted);
+  color: #64748b;
 }
 
 .header-meta {
@@ -60,19 +62,104 @@
   gap: 10px;
 }
 
-.cluster-badge {
+.polyglot-badge {
   display: inline-flex;
   align-items: center;
   font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  background-color: var(--bg-surface-subtle);
-  border: 1px solid var(--border-light);
+  font-weight: 600;
+  color: #334155;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
   padding: 4px 10px;
-  border-radius: var(--radius-md);
-  font-family: var(--font-mono);
+  border-radius: 6px;
+  font-family: monospace;
 }
 
+/* Barra de Pestañas de Navegación */
+.tab-navigation {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab-navigation::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.tab-btn:hover {
+  color: #0f172a;
+  background-color: #f8fafc;
+}
+
+.tab-btn.active {
+  color: #0284c7;
+  border-bottom-color: #0284c7;
+  background-color: #f0f9ff;
+}
+
+.tab-btn.tab-highlight.active {
+  color: #7c3aed;
+  border-bottom-color: #7c3aed;
+  background-color: #f5f3ff;
+}
+
+.tab-icon {
+  font-size: 1rem;
+}
+
+.tab-label {
+  font-size: 0.875rem;
+}
+
+.tab-db-tag {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.db-mysql {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.db-druid {
+  background-color: #ede9fe;
+  color: #6d28d9;
+}
+
+.db-cassandra {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.db-mongo {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+/* Área Principal */
 .app-main {
   flex: 1;
   max-width: 1240px;
@@ -81,20 +168,42 @@
   width: 100%;
 }
 
+/* Pie de Página */
 .app-footer {
-  border-top: 1px solid var(--border-light);
-  padding: 16px 24px;
+  border-top: 1px solid #e2e8f0;
+  padding: 20px 24px;
   text-align: center;
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  background-color: var(--bg-surface);
+  background-color: #ffffff;
+  color: #475569;
 }
 
-@media (max-width: 640px) {
+.footer-content p {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+.footer-sub {
+  margin-top: 4px !important;
+  font-size: 0.75rem !important;
+  color: #94a3b8;
+}
+
+@media (max-width: 768px) {
   .header-content {
     flex-direction: column;
     align-items: flex-start;
+    padding: 12px 16px 8px 16px;
   }
+
+  .tab-navigation {
+    padding: 0 16px;
+  }
+
+  .tab-btn {
+    padding: 8px 10px;
+    font-size: 0.8125rem;
+  }
+
   .app-main {
     padding: 16px 12px;
   }

@@ -5,6 +5,7 @@ import com.facturacion.domain.model.InvoiceDetail;
 import com.facturacion.domain.model.Person;
 import com.facturacion.domain.model.Product;
 import com.facturacion.domain.model.VentaFact;
+import com.facturacion.domain.model.ResultadoSincronizacion;
 import com.facturacion.domain.port.in.GenerarHechosUseCase;
 import com.facturacion.domain.port.out.DruidIngestionPort;
 import com.facturacion.domain.port.out.InvoiceRepositoryPort;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,11 +44,33 @@ public class GenerarHechosService implements GenerarHechosUseCase {
     }
 
     @Override
-    public List<VentaFact> ejecutarProcesoHechos() {
+    public ResultadoSincronizacion ejecutarProcesoHechos() {
         log.info("[ETL] Extrayendo facturas desde MySQL...");
         List<Invoice> invoices = invoiceRepository.findAll();
         log.info("[ETL] {} facturas extraidas", invoices.size());
 
+        List<VentaFact> facts = consolidarHechos(invoices);
+        log.info("[ETL] Consolidacion completada: {} hechos VentaFact generados", facts.size());
+
+        if (facts.isEmpty()) {
+            log.warn("[ETL] No hay hechos para enviar a Druid");
+            return new ResultadoSincronizacion(true, 0, 0, "No hay hechos para enviar a Druid");
+        }
+
+        log.info("[ETL] Enviando {} hechos a Druid...", facts.size());
+        boolean ok = druidIngestionPort.enviarHechosADruid(facts);
+        if (ok) {
+            log.info("[ETL] Envio a Druid exitoso");
+        } else {
+            log.error("[ETL] Fallo el envio a Druid");
+        }
+        double ganancia = facts.stream().mapToDouble(f -> f.getGanancia() != null ? f.getGanancia() : 0).sum();
+        return new ResultadoSincronizacion(ok, facts.size(), ganancia, ok
+                ? "Ingesta enviada a Druid; pendiente de finalización"
+                : "Druid no aceptó la ingesta o no fue posible conectar; consulte el registro del servidor");
+    }
+
+    private List<VentaFact> consolidarHechos(List<Invoice> invoices) {
         // Caches para evitar consultas repetidas a Cassandra / MongoDB
         Map<String, Person> personCache = new HashMap<>();
         Map<String, Product> productCache = new HashMap<>();
@@ -63,45 +86,38 @@ public class GenerarHechosService implements GenerarHechosUseCase {
             for (InvoiceDetail d : invoice.getDetalles()) {
                 Product product = lookupProduct(d.getProductoId(), productCache);
 
-                int cantidad = d.getCantidad() != null ? d.getCantidad() : 0;
-                double precio = d.getPrecioUnitario() != null ? d.getPrecioUnitario() : 0.0;
-                double costo = product != null && product.getCosto() != null ? product.getCosto() : 0.0;
-                double subtotal = d.getSubtotal() != null ? d.getSubtotal() : round2(cantidad * precio);
-                double ganancia = round2((precio - costo) * cantidad);
-
-                String productoNombre = d.getProductoNombre() != null ? d.getProductoNombre()
-                        : (product != null ? product.getNombre() : null);
-                String proveedor = product != null && product.getProveedor() != null
-                        ? product.getProveedor().getNombre() : "DESCONOCIDO";
-
-                facts.add(new VentaFact(
-                        ts,
-                        invoice.getId(),
-                        invoice.getClienteDocumento(),
-                        person != null ? person.getNombre() : invoice.getClienteNombre(),
-                        person != null && person.getCiudad() != null ? person.getCiudad() : "DESCONOCIDA",
-                        person != null && person.getCategoria() != null ? person.getCategoria() : "DESCONOCIDA",
-                        d.getProductoId(),
-                        productoNombre,
-                        proveedor,
-                        cantidad, precio, costo, subtotal, ganancia));
+                facts.add(crearHecho(invoice, d, person, ts, product));
             }
         }
-        log.info("[ETL] Consolidacion completada: {} hechos VentaFact generados", facts.size());
-
-        if (facts.isEmpty()) {
-            log.warn("[ETL] No hay hechos para enviar a Druid");
-            return facts;
-        }
-
-        log.info("[ETL] Enviando {} hechos a Druid...", facts.size());
-        boolean ok = druidIngestionPort.enviarHechosADruid(facts);
-        if (ok) {
-            log.info("[ETL] Envio a Druid exitoso");
-        } else {
-            log.error("[ETL] Fallo el envio a Druid");
-        }
         return facts;
+    }
+
+    private VentaFact crearHecho(Invoice invoice, InvoiceDetail d, Person person,
+                                 Instant ts, Product product) {
+        int cantidad = d.getCantidad() != null ? d.getCantidad() : 0;
+        double precio = d.getPrecioUnitario() != null ? d.getPrecioUnitario() : 0.0;
+        double costo = product != null && product.getCosto() != null ? product.getCosto() : 0.0;
+        double subtotal = d.getSubtotal() != null ? d.getSubtotal() : round2(cantidad * precio);
+        double ganancia = round2((precio - costo) * cantidad);
+
+        String productoNombre = d.getProductoNombre();
+        if (productoNombre == null && product != null) {
+            productoNombre = product.getNombre();
+        }
+        String proveedor = product != null && product.getProveedor() != null
+                ? product.getProveedor().getNombre() : "DESCONOCIDO";
+
+        return new VentaFact(
+                ts,
+                invoice.getId(),
+                invoice.getClienteDocumento(),
+                person != null ? person.getNombre() : invoice.getClienteNombre(),
+                person != null && person.getCiudad() != null ? person.getCiudad() : "DESCONOCIDA",
+                person != null && person.getCategoria() != null ? person.getCategoria() : "DESCONOCIDA",
+                d.getProductoId(),
+                productoNombre,
+                proveedor,
+                cantidad, precio, costo, subtotal, ganancia);
     }
 
     private Person lookupPerson(String documento, Map<String, Person> cache) {
@@ -133,8 +149,8 @@ public class GenerarHechosService implements GenerarHechosUseCase {
     }
 
     private static Instant toInstant(LocalDateTime date) {
-        LocalDateTime d = date != null ? date : LocalDateTime.now();
-        return d.atZone(ZoneId.systemDefault()).toInstant();
+        LocalDateTime d = date != null ? date : LocalDateTime.now(ZoneOffset.UTC);
+        return d.toInstant(ZoneOffset.UTC);
     }
 
     private static double round2(double v) {

@@ -12,6 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,7 +24,7 @@ public class DruidIngestionAdapter implements DruidIngestionPort {
     private static final Logger log = LoggerFactory.getLogger(DruidIngestionAdapter.class);
     static final String DATASOURCE = "hechos_ventas";
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final String coordinatorUrl;
 
@@ -31,6 +32,10 @@ public class DruidIngestionAdapter implements DruidIngestionPort {
                                  @Value("${druid.coordinator-url}") String coordinatorUrl) {
         this.objectMapper = objectMapper;
         this.coordinatorUrl = coordinatorUrl;
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(10000);
+        this.restTemplate = new RestTemplate(factory);
     }
 
     @Override

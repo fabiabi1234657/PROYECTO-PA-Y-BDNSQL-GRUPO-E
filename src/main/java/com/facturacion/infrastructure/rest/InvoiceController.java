@@ -6,10 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/invoices")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000"})
 public class InvoiceController {
 
     private final CreateInvoiceUseCase createInvoiceUseCase;
@@ -21,6 +22,11 @@ public class InvoiceController {
     @PostMapping
     public Invoice createInvoice(@RequestBody Invoice invoice) {
         return createInvoiceUseCase.createInvoice(invoice);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> invalidInvoice(IllegalArgumentException error) {
+        return ResponseEntity.badRequest().body(Map.of("status", "ERROR", "message", error.getMessage()));
     }
 
     @GetMapping

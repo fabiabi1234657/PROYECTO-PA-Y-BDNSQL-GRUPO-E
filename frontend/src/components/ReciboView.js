@@ -13,7 +13,7 @@ function ReciboView({ factura, onNuevaFactura }) {
   const formatDate = (s) => {
     if (!s) return 'N/A';
     try {
-      return new Date(s).toLocaleString('es-CO', {
+      return new Date(/(?:Z|[+-]\d{2}:\d{2})$/i.test(s) ? s : `${s}Z`).toLocaleString('es-CO', {
         day: '2-digit',
         month: 'short',
         year: 'numeric',
